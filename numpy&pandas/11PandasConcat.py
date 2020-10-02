@@ -31,5 +31,3 @@ print('-------------------------')
 s1 = pd.Series([1, 2, 3, 4], index=['a', 'b', 'c', 'd'])
 res = df1.append(s1, ignore_index=True)
 print(res)
-
-
