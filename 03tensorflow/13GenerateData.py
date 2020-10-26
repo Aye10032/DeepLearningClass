@@ -3,6 +3,10 @@ import numpy as np
 from PIL import Image
 import os
 
+from tensorflow.python.keras.callbacks import TensorBoard
+
+tbCallBack = TensorBoard(log_dir='./logs')  # log 目录
+
 train_path = '../data/mnist_image_label/mnist_train_jpg_60000/'
 train_txt = '../data/mnist_image_label/mnist_train_jpg_60000.txt'
 test_path = '../data/mnist_image_label/mnist_test_jpg_10000/'
@@ -74,5 +78,6 @@ model.compile(
     metrics=['sparse_categorical_accuracy']
 )
 
-model.fit(x_train, y_train, batch_size=32, epochs=5, validation_data=(x_test, y_test), validation_freq=1)
+model.fit(x_train, y_train, batch_size=32, epochs=10, validation_data=(x_test, y_test), validation_freq=1,
+          callbacks=[tbCallBack])
 model.summary()
