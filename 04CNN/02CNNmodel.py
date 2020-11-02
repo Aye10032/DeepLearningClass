@@ -2,8 +2,8 @@ import os
 
 import tensorflow as tf
 from tensorflow.keras import Model
-from tensorflow.python.keras.callbacks import TensorBoard
 from tensorflow.python.keras.layers import Conv2D, BatchNormalization, Activation, MaxPool2D, Dropout, Flatten, Dense
+import matplotlib.pyplot as plt
 
 cifar10 = tf.keras.datasets.cifar10
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
@@ -56,11 +56,10 @@ if os.path.exists(check_point_path + '.index'):
 cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=check_point_path,
                                                  save_weights_only=True,
                                                  save_best_only=True)
-tbCallBack = TensorBoard(log_dir='./logs')
 
-history = model.fit(x_train, y_train, batch_size=32, epochs=5,
+history = model.fit(x_train, y_train, batch_size=32, epochs=10,
                     validation_data=(x_test, y_test), validation_freq=1,
-                    callbacks=[cp_callback, tbCallBack])
+                    callbacks=[cp_callback])
 model.summary()
 
 file = open('./weights.txt', 'w')
@@ -70,3 +69,20 @@ for v in model.trainable_variables:
     file.write(str(v.numpy()) + '\n')
 
 file.close()
+
+# 绘制ACC和LOSS曲线
+acc = history.history['sparse_categorical_accuracy']
+val_acc = history.history['val_sparse_categorical_accuracy']
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+plt.subplot(1, 2, 1)
+plt.plot(acc, label='Training Accuracy')
+plt.plot(val_acc, label='Validation Accuracy')
+plt.title('ACC')
+plt.legend()
+plt.subplot(1, 2, 2)
+plt.plot(loss, label='Training Loss')
+plt.plot(val_loss, label='Validation Loss')
+plt.title('loss')
+plt.legend()
+plt.show()
