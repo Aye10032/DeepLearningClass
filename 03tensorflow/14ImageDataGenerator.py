@@ -20,11 +20,18 @@ image_gen_train = ImageDataGenerator(
 )
 image_gen_train.fit(x_train)
 
-model = keras.models.Sequential([
-    keras.layers.Flatten(),
-    keras.layers.Dense(128, activation='relu'),
-    keras.layers.Dense(10, activation='softmax')
-])
+# model = keras.models.Sequential([
+#     keras.layers.Flatten(),
+#     keras.layers.Dense(128, activation='relu'),
+#     keras.layers.Dense(10, activation='softmax')
+# ])
+
+model = keras.applications.DenseNet169(
+    include_top=True,
+    weights=None,
+    input_shape=(28, 28, 3),
+    pooling='max',
+    classes=2)
 
 model.compile(
     optimizer='adam',  # 优化器

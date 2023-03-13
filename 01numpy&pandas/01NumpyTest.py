@@ -11,7 +11,7 @@ print('size:', array.size)
 print('----------------------------------')
 
 array = np.array([2, 23, 4], dtype=np.int64)
-print(aray.dtype)
+print(array.dtype)
 array = np.array([2, 23, 4], dtype=np.float32)
 print(array.dtype)
 print('----------------------------------')

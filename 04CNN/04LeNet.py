@@ -61,9 +61,10 @@ cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=check_point_path,
                                                  save_weights_only=True,
                                                  save_best_only=True)
 
-history = model.fit(x_train, y_train, batch_size=32, epochs=10,
-                    validation_data=(x_test, y_test), validation_freq=1,
-                    callbacks=[cp_callback])
+tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir="fit_logs/", histogram_freq=1)
+
+history = model.fit(x_train, y_train, batch_size=32, epochs=10, validation_data=(x_test, y_test), validation_freq=1,
+                    callbacks=[cp_callback,tensorboard_callback])
 model.summary()
 
 file = open('./weights.txt', 'w')
