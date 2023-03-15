@@ -3,7 +3,9 @@ import os
 import tensorflow as tf
 from tensorflow.keras import Model
 from tensorflow.python.keras.layers import Conv2D, BatchNormalization, Activation, MaxPool2D, GlobalAveragePooling2D, Flatten, Dense
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 cifar10 = tf.keras.datasets.cifar10
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
@@ -19,7 +21,7 @@ class ConvBNRelu(Model):
             Activation('relu')
         ])
 
-    def call(self, inputs):
+    def call(self, inputs, **kwargs):
         outputs = self.modle(inputs, training=False)
 
         return outputs
@@ -73,7 +75,7 @@ class Inception10(Model):
         self.p1 = GlobalAveragePooling2D()
         self.f1 = Dense(num_classes, activation='softmax')
 
-    def call(self, inputs):
+    def call(self, inputs, **kwargs):
         inputs = self.c1(inputs)
         inputs = self.blocks(inputs)
         inputs = self.p1(inputs)

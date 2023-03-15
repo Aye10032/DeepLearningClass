@@ -3,7 +3,9 @@ import os
 import tensorflow as tf
 from tensorflow.keras import Model
 from tensorflow.python.keras.layers import Conv2D, BatchNormalization, Activation, GlobalAveragePooling2D, Dropout, Flatten, Dense
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 cifar10 = tf.keras.datasets.cifar10
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
@@ -32,8 +34,10 @@ class ResnetBlock(Model):
 
         self.a2 = Activation('relu')
 
-    def call(self, inputs):
-        residual = inputs  # residual等于输入值本身，即residual=x
+    def call(self, inputs, **kwargs):
+        # residual等于输入值本身，即residual=x
+        residual = inputs
+
         # 将输入通过卷积、BN层、激活层，计算F(x)
         x = self.c1(inputs)
         x = self.b1(x)
@@ -46,15 +50,17 @@ class ResnetBlock(Model):
             residual = self.down_c1(inputs)
             residual = self.down_b1(residual)
 
-        out = self.a2(y + residual)  # 最后输出的是两部分的和，即F(x)+x或F(x)+Wx,再过激活函数
+        # 最后输出的是两部分的和，即F(x)+x或F(x)+Wx,再过激活函数
+        out = self.a2(y + residual)
         return out
 
 
 class ResNet18(Model):
-
-    def __init__(self, block_list, initial_filters=64):  # block_list表示每个block有几个卷积层
+    # block_list表示每个block有几个卷积层
+    def __init__(self, block_list, initial_filters=64):
         super(ResNet18, self).__init__()
-        self.num_blocks = len(block_list)  # 共有几个block
+        # 共有几个block
+        self.num_blocks = len(block_list)
         self.block_list = block_list
         self.out_filters = initial_filters
         self.c1 = Conv2D(self.out_filters, (3, 3), strides=1, padding='same', use_bias=False)
@@ -62,19 +68,23 @@ class ResNet18(Model):
         self.a1 = Activation('relu')
         self.blocks = tf.keras.models.Sequential()
         # 构建ResNet网络结构
-        for block_id in range(len(block_list)):  # 第几个resnet block
-            for layer_id in range(block_list[block_id]):  # 第几个卷积层
-
-                if block_id != 0 and layer_id == 0:  # 对除第一个block以外的每个block的输入进行下采样
+        # 第几个resnet block
+        for block_id in range(len(block_list)):
+            # 第几个卷积层
+            for layer_id in range(block_list[block_id]):
+                # 对除第一个block以外的每个block的输入进行下采样
+                if block_id != 0 and layer_id == 0:
                     block = ResnetBlock(self.out_filters, strides=2, residual_path=True)
                 else:
                     block = ResnetBlock(self.out_filters, residual_path=False)
-                self.blocks.add(block)  # 将构建好的block加入resnet
-            self.out_filters *= 2  # 下一个block的卷积核数是上一个block的2倍
+                # 将构建好的block加入resnet
+                self.blocks.add(block)
+            # 下一个block的卷积核数是上一个block的2倍
+            self.out_filters *= 2
         self.p1 = GlobalAveragePooling2D()
         self.f1 = Dense(10, activation='softmax', kernel_regularizer=tf.keras.regularizers.l2())
 
-    def call(self, inputs):
+    def call(self, inputs, **kwargs):
         x = self.c1(inputs)
         x = self.b1(x)
         x = self.a1(x)

@@ -1,6 +1,10 @@
+import os
+
 import tensorflow as tf
 from sklearn import datasets
 import numpy as np
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # 导入数据集、数据集乱序
 x_train = datasets.load_iris().data
@@ -15,7 +19,7 @@ model = tf.keras.Sequential([
 ])
 
 model.compile(
-    optimizer=tf.keras.optimizers.SGD(lr=0.1),  # 优化器
+    optimizer=tf.keras.optimizers.SGD(learning_rate=0.1),  # 优化器
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),  # 损失函数（已经过概率化分布）
     metrics=['sparse_categorical_accuracy']
 )

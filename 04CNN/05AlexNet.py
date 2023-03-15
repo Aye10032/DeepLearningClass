@@ -3,7 +3,9 @@ import os
 import tensorflow as tf
 from tensorflow.keras import Model
 from tensorflow.python.keras.layers import Conv2D, BatchNormalization, Activation, MaxPool2D, Dropout, Flatten, Dense
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 cifar10 = tf.keras.datasets.cifar10
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
